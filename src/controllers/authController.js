@@ -2,19 +2,19 @@ const bcrypt = require('bcrypt');
 const { User } = require('../models');
 
 function getRegister(req, res) {
-  res.render('auth/register', { title: 'Регистрация', error: null });
+  res.render('register', { title: 'Регистрация', error: null });
 }
 
 async function postRegister(req, res) {
   const { fullName, login, password } = req.body;
 
   if (!fullName || !login || !password) {
-    return res.render('auth/register', { title: 'Регистрация', error: 'Заполните все поля.' });
+    return res.render('register', { title: 'Регистрация', error: 'Заполните все поля.' });
   }
 
   const existing = await User.findOne({ where: { login } });
   if (existing) {
-    return res.render('auth/register', { title: 'Регистрация', error: 'Логин уже занят.' });
+    return res.render('register', { title: 'Регистрация', error: 'Логин уже занят.' });
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
@@ -23,7 +23,7 @@ async function postRegister(req, res) {
 }
 
 function getLogin(req, res) {
-  res.render('auth/login', { title: 'Авторизация', error: null });
+  res.render('login', { title: 'Авторизация', error: null });
 }
 
 async function postLogin(req, res) {
@@ -31,12 +31,12 @@ async function postLogin(req, res) {
   const user = await User.findOne({ where: { login } });
 
   if (!user) {
-    return res.render('auth/login', { title: 'Авторизация', error: 'Неверный логин или пароль.' });
+    return res.render('login', { title: 'Авторизация', error: 'Неверный логин или пароль.' });
   }
 
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) {
-    return res.render('auth/login', { title: 'Авторизация', error: 'Неверный логин или пароль.' });
+    return res.render('login', { title: 'Авторизация', error: 'Неверный логин или пароль.' });
   }
 
   req.session.user = { id: user.id, fullName: user.fullName, role: user.role };
